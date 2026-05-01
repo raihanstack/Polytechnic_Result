@@ -6,16 +6,15 @@ from .models import StudentResult, Subject
 @cache_page(60 * 15)
 def public_search_view(request):
     roll_query = request.GET.get('roll')
-    semester_query = request.GET.get('semester')
+    regulation_query = request.GET.get('regulation')
     
     results = None
-    all_semesters = StudentResult.objects.values_list('semester', flat=True).distinct()
+    # We provide static regulation choices based on the Subject model
+    all_regulations = [choice[0] for choice in Subject.REGULATION_CHOICES]
 
-    if roll_query:
-        results = StudentResult.objects.filter(roll=roll_query)
-        
-        if semester_query and semester_query != 'All':
-            results = results.filter(semester=semester_query)
+    if roll_query and regulation_query:
+        # Order by semester is already defined in the model's Meta class
+        results = StudentResult.objects.filter(roll=roll_query, regulation=regulation_query)
 
         # Enhance results with Subject objects for failed codes
         for result in results:
@@ -24,7 +23,7 @@ def public_search_view(request):
     context = {
         'results': results,
         'roll_query': roll_query,
-        'semester_query': semester_query,
-        'all_semesters': all_semesters
+        'regulation_query': regulation_query,
+        'all_regulations': all_regulations
     }
     return render(request, 'results/search.html', context)

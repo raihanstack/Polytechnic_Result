@@ -10,11 +10,11 @@
                 <input type="text" name="roll" id="roll" value="{{ roll_query|default_if_none:'' }}" required class="mt-1 focus:ring-primary focus:border-primary block w-full shadow-sm sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md p-2 border">
             </div>
             <div class="sm:w-1/4">
-                <label for="semester" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Semester</label>
-                <select id="semester" name="semester" class="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
-                    <option value="All">All Semesters</option>
-                    {% for sem in all_semesters %}
-                    <option value="{{ sem }}" {% if semester_query == sem %}selected{% endif %}>{{ sem }}</option>
+                <label for="regulation" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Regulation</label>
+                <select id="regulation" name="regulation" required class="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                    <option value="" disabled {% if not regulation_query %}selected{% endif %}>Select Regulation</option>
+                    {% for reg in all_regulations %}
+                    <option value="{{ reg }}" {% if regulation_query == reg %}selected{% endif %}>{{ reg }}</option>
                     {% endfor %}
                 </select>
             </div>
