@@ -1,9 +1,19 @@
 <!DOCTYPE html>
-<html lang="en" class="light">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polytechnic Result Management System</title>
+    <title>Polytechnic Result - Official Management Portal</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -11,77 +21,111 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#3b82f6',
-                        secondary: '#10b981'
-                    }
+                        primary: '#2563eb',
+                        secondary: '#475569',
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
                 }
             }
         }
     </script>
+
     <style>
+        body { font-family: 'Outfit', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
+        .dark .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(10px); }
+        .no-print { @media print { display: none !important; } }
         @media print {
-            .no-print {
-                display: none !important;
-            }
-            .print-break {
-                page-break-after: always;
-            }
+            body { background: white !important; padding: 0 !important; }
+            .bg-slate-50, .dark\:bg-slate-950 { background: white !important; }
+            .rounded-\[2\.5rem\], .rounded-3xl { border-radius: 0 !important; border: 1px solid #e2e8f0 !important; }
+            .shadow-2xl, .shadow-xl { shadow: none !important; }
         }
+        .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 min-h-screen flex flex-col transition-colors duration-200">
-
-    <nav class="bg-white dark:bg-gray-800 shadow-md no-print">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-300">
+    
+    <!-- Premium Navbar -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass border-b border-slate-100/50 dark:border-slate-800/50 no-print">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex">
-                    <div class="flex-shrink-0 flex items-center">
-                        <a href="/" class="text-xl font-bold text-primary dark:text-blue-400">Polytechnic Result</a>
-                    </div>
-                </div>
+            <div class="flex justify-between items-center h-20">
                 <div class="flex items-center">
-                    <button id="darkModeToggle" class="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary">
-                        <svg class="h-6 w-6 dark:hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </svg>
-                        <svg class="h-6 w-6 hidden dark:block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
+                    <a href="/" class="flex items-center space-x-3 group">
+                        <div class="h-10 w-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/30 transform group-hover:scale-110 transition-transform">
+                            <i class="fas fa-university text-lg"></i>
+                        </div>
+                        <span class="text-xl font-black tracking-tight dark:text-white">Polytechnic <span class="text-primary">Result</span></span>
+                    </a>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <nav class="flex items-center space-x-1">
+                        <a href="/" class="px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-primary transition-colors">Home</a>
+                        <a href="mailto:support@raihanstack.com" class="px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-primary transition-colors">Support</a>
+                    </nav>
+                    
+                    <button onclick="document.documentElement.classList.toggle('dark')" class="p-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-all shadow-sm">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:block"></i>
+                    </button>
+                </div>
+
+                <div class="md:hidden flex items-center space-x-4">
+                    <button onclick="document.documentElement.classList.toggle('dark')" class="p-2 text-slate-600 dark:text-slate-400">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:block"></i>
+                    </button>
+                    <button class="text-slate-600 dark:text-slate-400 p-2">
+                        <i class="fas fa-search"></i>
                     </button>
                 </div>
             </div>
         </div>
-    </nav>
+    </header>
 
-    <main class="flex-grow w-full max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <main class="pt-20">
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-white dark:bg-gray-800 shadow-inner mt-auto py-4 no-print">
-        <div class="max-w-7xl mx-auto px-4 text-center text-sm text-gray-500 dark:text-gray-400">
-            &copy; 2026 Polytechnic Result Management System.
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-slate-900 pt-20 pb-10 border-t border-slate-100 dark:border-slate-800 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-white">
+                            <i class="fas fa-university text-sm"></i>
+                        </div>
+                        <span class="text-lg font-black tracking-tight dark:text-white">Polytechnic <span class="text-primary">Result</span></span>
+                    </div>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed max-w-md">
+                        A high-performance academic management portal designed for polytechnic institutions. Instant results, advanced performance tracking, and digital transcripts.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest mb-6">Built By</h4>
+                    <ul class="space-y-4">
+                        <li class="flex items-center space-x-3">
+                            <div class="h-10 w-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-primary font-black text-xs">RS</div>
+                            <div class="text-sm">
+                                <div class="font-black dark:text-white">raihanstack</div>
+                                <div class="text-slate-400 text-[10px] uppercase tracking-widest">Developer & Architect</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-slate-100 dark:border-slate-800 text-center">
+                <p class="text-slate-400 text-xs tracking-widest font-bold uppercase">
+                    &copy; 2026 Polytechnic Result. Build by <span class="text-primary">raihanstack</span>
+                </p>
+            </div>
         </div>
     </footer>
 
-    <script>
-        const html = document.querySelector('html');
-        const toggle = document.getElementById('darkModeToggle');
-        
-        // Check local storage or system preference
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            html.classList.add('dark');
-        } else {
-            html.classList.remove('dark');
-        }
-
-        toggle.addEventListener('click', () => {
-            html.classList.toggle('dark');
-            if (html.classList.contains('dark')) {
-                localStorage.theme = 'dark';
-            } else {
-                localStorage.theme = 'light';
-            }
-        });
-    </script>
 </body>
 </html>
