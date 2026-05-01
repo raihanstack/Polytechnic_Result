@@ -1,5 +1,5 @@
 import re
-import pdfplumber
+import pypdfium2 as pdfium
 from django.db import transaction
 from results.models import Subject, StudentResult
 
@@ -24,25 +24,34 @@ def parse_and_process_pdf(file_path, semester, regulation):
     current_inst_code = None
     current_inst_name = None
 
-    with pdfplumber.open(file_path) as pdf:
-        for page in pdf.pages:
-            text = page.extract_text()
+    # Use pypdfium2 for blazing fast C++ based text extraction instead of pdfplumber
+    pdf = pdfium.PdfDocument(file_path)
+    try:
+        for i in range(len(pdf)):
+            page = pdf[i]
+            textpage = page.get_textpage()
+            text = textpage.get_text_range()
+            
             if not text:
                 continue
             
-            lines = text.split('\n')
-            for line in lines:
-                # 1. Check for Institute Header
-                inst_match = institute_pattern.search(line)
-                if inst_match:
-                    current_inst_code = inst_match.group(1).strip()
-                    current_inst_name = inst_match.group(2).strip()
-
-                # 2. Check for Student Results in this line
-                # Note: finditer is used in case multiple students are on one line
-                for student_match in student_pattern.finditer(line):
-                    roll = student_match.group(1).strip()
-                    content = student_match.group(2).strip()
+            # Find all institute headers and student blocks on the entire page
+            inst_matches = list(institute_pattern.finditer(text))
+            student_matches = list(student_pattern.finditer(text))
+            
+            # Sort them by their position in the text to maintain the State Machine order
+            all_matches = sorted(inst_matches + student_matches, key=lambda m: m.start())
+            
+            for match in all_matches:
+                # If this is an Institute match
+                if match.re == institute_pattern:
+                    current_inst_code = match.group(1).strip()
+                    current_inst_name = match.group(2).strip()
+                
+                # If this is a Student match
+                else:
+                    roll = match.group(1).strip()
+                    content = match.group(2).strip()
                     
                     # Extract GPA if present
                     gpa_match = gpa_pattern.search(content)
@@ -81,6 +90,8 @@ def parse_and_process_pdf(file_path, semester, regulation):
                         status=status,
                         is_drop=is_drop,
                     ))
+    finally:
+        pdf.close()
 
     # Bulk insert for massive speed optimization
     with transaction.atomic():
