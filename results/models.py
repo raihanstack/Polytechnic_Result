@@ -17,7 +17,8 @@ class Subject(models.Model):
     technology = models.CharField(max_length=100)
 
     class Meta:
-        unique_together = ('subject_code', 'regulation')
+        unique_together = ('subject_code', 'regulation', 'technology')
+        ordering = ['semester', 'subject_code']
 
     def __str__(self):
         return f"{self.subject_name} ({self.subject_code})"
@@ -34,6 +35,7 @@ class StudentResult(models.Model):
     reg_no = models.CharField(max_length=20, blank=True, null=True)
     institute_code = models.CharField(max_length=50, blank=True, null=True)
     institute_name = models.CharField(max_length=255, blank=True, null=True)
+    technology = models.CharField(max_length=100, blank=True, null=True)
     semester = models.CharField(max_length=50, choices=Subject.SEMESTER_CHOICES)
     regulation = models.CharField(max_length=10)
     gpa = models.CharField(max_length=10, blank=True, null=True)
@@ -51,5 +53,9 @@ class StudentResult(models.Model):
     def get_failed_subjects_list(self):
         if not self.failed_subject_codes:
             return []
-        codes = [code.strip() for code in self.failed_subject_codes.split(',') if code.strip()]
-        return Subject.objects.filter(subject_code__in=codes, regulation=self.regulation)
+        codes = [c.strip() for c in self.failed_subject_codes.split(',')]
+        return Subject.objects.filter(
+            subject_code__in=codes, 
+            regulation=self.regulation,
+            technology=self.technology
+        )
