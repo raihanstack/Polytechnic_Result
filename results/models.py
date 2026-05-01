@@ -6,9 +6,13 @@ class Subject(models.Model):
         ('2016', '2016'),
         ('2022', '2022'),
     )
+    SEMESTER_CHOICES = (
+        ('1st', '1st'), ('2nd', '2nd'), ('3rd', '3rd'), ('4th', '4th'),
+        ('5th', '5th'), ('6th', '6th'), ('7th', '7th'), ('8th', '8th'),
+    )
     subject_code = models.CharField(max_length=20)
     subject_name = models.CharField(max_length=255)
-    semester = models.CharField(max_length=50)
+    semester = models.CharField(max_length=50, choices=SEMESTER_CHOICES)
     regulation = models.CharField(max_length=10, choices=REGULATION_CHOICES)
     technology = models.CharField(max_length=100)
 
@@ -28,7 +32,7 @@ class StudentResult(models.Model):
     
     roll = models.CharField(max_length=20, db_index=True)
     reg_no = models.CharField(max_length=20, blank=True, null=True)
-    semester = models.CharField(max_length=50)
+    semester = models.CharField(max_length=50, choices=Subject.SEMESTER_CHOICES)
     regulation = models.CharField(max_length=10)
     gpa = models.CharField(max_length=10, blank=True, null=True)
     failed_subject_codes = models.TextField(blank=True, null=True, help_text="Comma separated codes")
