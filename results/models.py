@@ -32,6 +32,8 @@ class StudentResult(models.Model):
     
     roll = models.CharField(max_length=20, db_index=True)
     reg_no = models.CharField(max_length=20, blank=True, null=True)
+    institute_code = models.CharField(max_length=50, blank=True, null=True)
+    institute_name = models.CharField(max_length=255, blank=True, null=True)
     semester = models.CharField(max_length=50, choices=Subject.SEMESTER_CHOICES)
     regulation = models.CharField(max_length=10)
     gpa = models.CharField(max_length=10, blank=True, null=True)

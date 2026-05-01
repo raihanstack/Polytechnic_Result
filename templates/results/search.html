@@ -2,32 +2,57 @@
 
 {% block content %}
 <div class="px-4 py-6 sm:px-0">
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-8 no-print">
-        <h2 class="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Search Results</h2>
-        <form id="searchForm" method="GET" action="{% url 'public_search' %}" class="flex flex-col sm:flex-row gap-4">
-            <div class="flex-grow">
-                <label for="roll" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Roll Number</label>
-                <input type="text" name="roll" id="roll" value="{{ roll_query|default_if_none:'' }}" required class="mt-1 focus:ring-primary focus:border-primary block w-full shadow-sm sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md p-2 border">
-            </div>
-            <div class="sm:w-1/4">
-                <label for="regulation" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Regulation</label>
-                <select id="regulation" name="regulation" required class="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
-                    <option value="" disabled {% if not regulation_query %}selected{% endif %}>Select Regulation</option>
-                    {% for reg in all_regulations %}
-                    <option value="{{ reg }}" {% if regulation_query == reg %}selected{% endif %}>{{ reg }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="flex items-end">
-                <button type="submit" id="searchBtn" class="w-full sm:w-auto inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors">
-                    <span id="btnText">Search</span>
-                    <svg id="btnSpinner" class="hidden animate-spin ml-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                </button>
-            </div>
-        </form>
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg mb-8 overflow-hidden no-print">
+        <div class="border-b border-gray-200 dark:border-gray-700">
+            <nav class="-mb-px flex text-center" aria-label="Tabs">
+                <a href="?search_type=individual" class="w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm transition-colors {% if search_type == 'individual' %}border-primary text-primary dark:text-blue-400{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300{% endif %}">
+                    Individual Result
+                </a>
+                <a href="?search_type=institute" class="w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm transition-colors {% if search_type == 'institute' %}border-primary text-primary dark:text-blue-400{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300{% endif %}">
+                    Institute Result
+                </a>
+            </nav>
+        </div>
+
+        <div class="p-6">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800 dark:text-white">
+                {% if search_type == 'institute' %}Search Institute Results{% else %}Search Individual Result{% endif %}
+            </h2>
+            
+            <form id="searchForm" method="GET" action="{% url 'public_search' %}" class="flex flex-col sm:flex-row gap-4">
+                <input type="hidden" name="search_type" value="{{ search_type }}">
+                
+                <div class="flex-grow">
+                    {% if search_type == 'institute' %}
+                        <label for="institute_code" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Institute Code</label>
+                        <input type="text" name="institute_code" id="institute_code" value="{{ inst_query|default_if_none:'' }}" placeholder="e.g. 50117" required class="mt-1 focus:ring-primary focus:border-primary block w-full shadow-sm sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md p-2 border">
+                    {% else %}
+                        <label for="roll" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Roll Number</label>
+                        <input type="text" name="roll" id="roll" value="{{ roll_query|default_if_none:'' }}" placeholder="e.g. 114956" required class="mt-1 focus:ring-primary focus:border-primary block w-full shadow-sm sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md p-2 border">
+                    {% endif %}
+                </div>
+                
+                <div class="sm:w-1/4">
+                    <label for="regulation" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Regulation</label>
+                    <select id="regulation" name="regulation" required class="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                        <option value="" disabled {% if not regulation_query %}selected{% endif %}>Select</option>
+                        {% for reg in all_regulations %}
+                        <option value="{{ reg }}" {% if regulation_query == reg %}selected{% endif %}>{{ reg }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="flex items-end">
+                    <button type="submit" id="searchBtn" class="w-full sm:w-auto inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors">
+                        <span id="btnText">Search</span>
+                        <svg id="btnSpinner" class="hidden animate-spin ml-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -39,122 +64,141 @@
         });
     </script>
 
-    {% if results != None %}
-        {% if results %}
-            <div class="flex justify-between items-center mb-6 no-print">
-                <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Academic Journey for Roll: {{ roll_query }}</h3>
-                <button onclick="window.print()" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-secondary hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary transition-colors">
-                    <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                    </svg>
-                    Print Mark-sheet
-                </button>
-            </div>
+    {% if search_type == 'individual' %}
+        {% if results != None %}
+            {% if results %}
+                <div class="flex justify-between items-center mb-6 no-print">
+                    <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Academic Journey for Roll: {{ roll_query }}</h3>
+                    <button onclick="window.print()" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-secondary hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary transition-colors">
+                        Print Mark-sheet
+                    </button>
+                </div>
 
-            <div class="space-y-8">
-                {% for result in results %}
-                <div class="bg-white dark:bg-gray-800 shadow-md sm:rounded-lg print-break border-t-4 
-                    {% if result.status == 'Pass' %}border-green-500
-                    {% elif result.status == 'Referred' %}border-yellow-500
-                    {% else %}border-red-500{% endif %}">
-                    
-                    <div class="px-4 py-5 sm:px-6">
+                <div class="space-y-8">
+                    {% for result in results %}
+                    <div class="bg-white dark:bg-gray-800 shadow-md sm:rounded-lg print-break border-t-4 
+                        {% if result.status == 'Pass' %}border-green-500
+                        {% elif result.status == 'Referred' %}border-yellow-500
+                        {% else %}border-red-500{% endif %}">
+                        
+                        <div class="px-4 py-5 sm:px-6 flex justify-between">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">
+                                {{ result.semester }} Semester
+                            </h3>
+                            {% if result.institute_name %}
+                            <span class="text-sm text-gray-500 dark:text-gray-400">{{ result.institute_name }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="border-t border-gray-200 dark:border-gray-700">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                    <tr>
+                                        <th scope="row" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 w-1/4">
+                                            Status
+                                        </th>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold">
+                                            <span class="
+                                                {% if result.status == 'Pass' %}text-green-600 dark:text-green-400
+                                                {% elif result.status == 'Referred' %}text-yellow-600 dark:text-yellow-400
+                                                {% else %}text-red-600 dark:text-red-400{% endif %}">
+                                                {{ result.status }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% if result.gpa %}
+                                    <tr>
+                                        <th scope="row" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50">
+                                            GPA
+                                        </th>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-white">
+                                            {{ result.gpa }}
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                    
+                                    {% if result.failed_subjects %}
+                                    <tr>
+                                        <th scope="row" class="px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 align-top">
+                                            Failed Subjects
+                                        </th>
+                                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
+                                            <ul class="list-disc pl-5 space-y-1 text-red-600 dark:text-red-400 font-medium">
+                                                {% for subject in result.failed_subjects %}
+                                                <li>{{ subject.subject_name }} ({{ subject.subject_code }})</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    {% elif result.failed_subject_codes %}
+                                    <tr>
+                                        <th scope="row" class="px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 align-top">
+                                            Failed Codes
+                                        </th>
+                                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
+                                            <span class="text-red-600 dark:text-red-400">{{ result.failed_subject_codes }}</span>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 dark:bg-yellow-900 dark:border-yellow-700 no-print">
+                    <p class="text-sm text-yellow-700 dark:text-yellow-200">No results found for roll number <strong>{{ roll_query }}</strong>.</p>
+                </div>
+            {% endif %}
+        {% endif %}
+
+    {% elif search_type == 'institute' %}
+        {% if institute_results != None %}
+            {% if institute_results %}
+                <div class="bg-white dark:bg-gray-800 shadow-md sm:rounded-lg overflow-hidden">
+                    <div class="px-4 py-5 sm:px-6 border-b border-gray-200 dark:border-gray-700">
                         <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">
-                            {{ result.semester }} Semester Result
+                            Institute Result Overview ({{ inst_query }})
                         </h3>
                     </div>
-                    
-                    <div class="border-t border-gray-200 dark:border-gray-700">
+                    <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-900">
                                 <tr>
-                                    <th scope="row" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 w-1/4">
-                                        Regulation
-                                    </th>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white w-3/4">
-                                        {{ result.regulation }}
-                                    </td>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Roll</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Semester</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GPA</th>
                                 </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                {% for res in institute_results %}
                                 <tr>
-                                    <th scope="row" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50">
-                                        Status
-                                    </th>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold">
-                                        <span class="
-                                            {% if result.status == 'Pass' %}text-green-600 dark:text-green-400
-                                            {% elif result.status == 'Referred' %}text-yellow-600 dark:text-yellow-400
-                                            {% else %}text-red-600 dark:text-red-400{% endif %}">
-                                            {{ result.status }}
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ res.roll }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ res.semester }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                        {% if res.status == 'Pass' %}bg-green-100 text-green-800
+                                        {% elif res.status == 'Referred' %}bg-yellow-100 text-yellow-800
+                                        {% else %}bg-red-100 text-red-800{% endif %}">
+                                            {{ res.status }}
                                         </span>
                                     </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ res.gpa|default:"-" }}</td>
                                 </tr>
-                                {% if result.gpa %}
-                                <tr>
-                                    <th scope="row" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50">
-                                        GPA
-                                    </th>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-white">
-                                        {{ result.gpa }}
-                                    </td>
-                                </tr>
-                                {% endif %}
-                                
-                                {% if result.failed_subjects %}
-                                <tr>
-                                    <th scope="row" class="px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 align-top">
-                                        Failed Subjects
-                                    </th>
-                                    <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
-                                        <ul class="list-disc pl-5 space-y-1 text-red-600 dark:text-red-400 font-medium">
-                                            {% for subject in result.failed_subjects %}
-                                            <li>{{ subject.subject_name }} ({{ subject.subject_code }})</li>
-                                            {% endfor %}
-                                        </ul>
-                                    </td>
-                                </tr>
-                                {% elif result.failed_subject_codes %}
-                                <tr>
-                                    <th scope="row" class="px-6 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 align-top">
-                                        Failed Codes
-                                    </th>
-                                    <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
-                                        <span class="text-red-600 dark:text-red-400">{{ result.failed_subject_codes }}</span>
-                                        <span class="text-gray-400 dark:text-gray-500 block mt-1 text-xs">(Subject names not found in database)</span>
-                                    </td>
-                                </tr>
-                                {% endif %}
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
                 </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 dark:bg-yellow-900 dark:border-yellow-700 no-print">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm text-yellow-700 dark:text-yellow-200">
-                            No results found for roll number <strong>{{ roll_query }}</strong>. Please check the number and try again.
-                        </p>
-                    </div>
+            {% else %}
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 dark:bg-yellow-900 dark:border-yellow-700 no-print">
+                    <p class="text-sm text-yellow-700 dark:text-yellow-200">No results found for Institute Code <strong>{{ inst_query }}</strong>.</p>
                 </div>
-            </div>
+            {% endif %}
         {% endif %}
-    {% else %}
-        <div class="text-center py-12 no-print">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-            </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No search performed</h3>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Enter your roll number above to view your academic journey.
-            </p>
-        </div>
     {% endif %}
+
 </div>
 {% endblock %}
