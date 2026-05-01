@@ -47,9 +47,18 @@
             </fieldset>
 
             <div class="submit-row">
-                <input type="submit" value="Upload and Process" class="default" name="_save">
+                <input type="submit" value="Upload and Process" class="default" name="_save" id="uploadBtn">
             </div>
         </div>
     </form>
 </div>
+
+<script type="text/javascript">
+    document.getElementById('upload_pdf_form').addEventListener('submit', function() {
+        var btn = document.getElementById('uploadBtn');
+        btn.value = 'Uploading & Processing... Please wait';
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+    });
+</script>
 {% endblock %}

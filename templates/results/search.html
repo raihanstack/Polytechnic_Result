@@ -4,7 +4,7 @@
 <div class="px-4 py-6 sm:px-0">
     <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-8 no-print">
         <h2 class="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Search Results</h2>
-        <form method="GET" action="{% url 'public_search' %}" class="flex flex-col sm:flex-row gap-4">
+        <form id="searchForm" method="GET" action="{% url 'public_search' %}" class="flex flex-col sm:flex-row gap-4">
             <div class="flex-grow">
                 <label for="roll" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Roll Number</label>
                 <input type="text" name="roll" id="roll" value="{{ roll_query|default_if_none:'' }}" required class="mt-1 focus:ring-primary focus:border-primary block w-full shadow-sm sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md p-2 border">
@@ -19,12 +19,25 @@
                 </select>
             </div>
             <div class="flex items-end">
-                <button type="submit" class="w-full sm:w-auto inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors">
-                    Search
+                <button type="submit" id="searchBtn" class="w-full sm:w-auto inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors">
+                    <span id="btnText">Search</span>
+                    <svg id="btnSpinner" class="hidden animate-spin ml-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
                 </button>
             </div>
         </form>
     </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function() {
+            document.getElementById('btnText').innerText = 'Searching...';
+            document.getElementById('btnSpinner').classList.remove('hidden');
+            document.getElementById('searchBtn').disabled = true;
+            document.getElementById('searchBtn').classList.add('opacity-75', 'cursor-not-allowed');
+        });
+    </script>
 
     {% if results != None %}
         {% if results %}
